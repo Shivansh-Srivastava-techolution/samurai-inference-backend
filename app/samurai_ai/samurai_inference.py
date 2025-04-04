@@ -75,7 +75,7 @@ def classify_motion(bbox_sequence, frame_height, frame_width, threshold=0.9):
     return "invalid"
 
 def process_video(video_path, coords, model_path="sam2/checkpoints/sam2.1_hiera_base_plus.pt", 
-                 save_video=False, output_path="demo.mp4"):
+                 save_video=False, output_path="demo.mp4", frame_skip=1):
     """
     Main function to process video and classify motion.
     
@@ -85,12 +85,13 @@ def process_video(video_path, coords, model_path="sam2/checkpoints/sam2.1_hiera_
         model_path (str): Path to model checkpoint
         save_video (bool): Whether to save visualization video
         output_path (str): Path for output video if save_video is True
+        frame_skip (int): Number of frames to skip while processing (default 1 = no skipping)
         
     Returns:
         str: Motion classification ("grab" or "invalid")
     """
     color = [(255, 0, 0)]
-    
+
     # Initialize model and predictor
     model_cfg = determine_model_cfg(model_path)
     predictor = build_sam2_video_predictor(model_cfg, model_path, device="cuda:0")
@@ -132,13 +133,16 @@ def process_video(video_path, coords, model_path="sam2/checkpoints/sam2.1_hiera_
 
     # Track object and classify motion
     bbox_sequence = []
-    
+
     with torch.inference_mode(), torch.autocast("cuda", dtype=torch.float16):
         state = predictor.init_state(frames_or_path, offload_video_to_cpu=True)
         bbox, track_label = prompts[0]
         _, _, masks = predictor.add_new_points_or_box(state, box=bbox, frame_idx=0, obj_id=0)
 
         for frame_idx, object_ids, masks in predictor.propagate_in_video(state):
+            if frame_idx % frame_skip != 0:
+                continue  # Skip frames as per frame_skip value
+
             mask_to_vis = {}
             bbox_to_vis = {}
 
@@ -150,10 +154,10 @@ def process_video(video_path, coords, model_path="sam2/checkpoints/sam2.1_hiera_
                     y_min, x_min = non_zero_indices.min(axis=0)
                     y_max, x_max = non_zero_indices.max(axis=0)
                     bbox = (x_min, y_min, x_max - x_min, y_max - y_min)
-                    
+
                     if obj_id == 0:  # Track the first object
                         bbox_sequence.append(bbox)
-                    
+
                     bbox_to_vis[obj_id] = bbox
                     mask_to_vis[obj_id] = mask
 
@@ -182,5 +186,5 @@ def process_video(video_path, coords, model_path="sam2/checkpoints/sam2.1_hiera_
     gc.collect()
     torch.clear_autocast_cache()
     torch.cuda.empty_cache()
-    
+
     return motion_type, bbox_sequence

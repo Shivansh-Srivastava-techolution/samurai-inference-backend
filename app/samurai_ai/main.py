@@ -42,7 +42,7 @@ def inference(video_path):
     sam_save_path = os.path.join("sam2_results", f"track_{vidname}")
     os.makedirs("sam2_results", exist_ok=True)
     logic_inference, bbox_sequence = process_video(video_path, samurai_bboxes, model_path=SAMURAI_WEIGHT_PATH, 
-                save_video=False, output_path=sam_save_path)
+                save_video=True, output_path=sam_save_path, frame_skip = 2)
     samurai_time_taken = time.perf_counter() - samurai_time_start
     
     cnn_time_start = time.perf_counter()
