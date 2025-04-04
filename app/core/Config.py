@@ -10,3 +10,6 @@ if os.path.exists(CLASS_MAP_PATH):
         CLASS_MAP = json.load(f) 
 else:
     CLASS_MAP = {}
+
+GDINO_URL = "http://35.232.107.25:8501/gdino_infer"
+GDINO_PROMPT = 'medical paper, box'
