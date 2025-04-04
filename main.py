@@ -31,5 +31,6 @@ if __name__ == "__main__":
     import os
     import uvicorn
     os.system("echo http://$(curl -s ifconfig.me):8501/samurai_inference")
+    print()
     uvicorn.run(app, host="0.0.0.0", port=8501)
 

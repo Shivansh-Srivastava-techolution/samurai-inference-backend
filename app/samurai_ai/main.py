@@ -16,6 +16,11 @@ cnn_model = CNN1DModel(num_features=9, num_classes=len(class_map))
 cnn_model.load_state_dict(torch.load(CNN_WEIGHT_PATH, map_location=device))
 cnn_model.to(device)
 
+print("CNN Model Loaded:")
+print(cnn_model)
+print(device)
+print(class_map)
+
 def inference(video_path):
     cap = cv2.VideoCapture(video_path)
 

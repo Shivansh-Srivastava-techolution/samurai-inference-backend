@@ -1,5 +1,5 @@
 def get_object_polygons(image):
-    pass
+    return []
 
 def find_bbox_in_first_n_frames(cap, max_frames=5):
     for i in range(max_frames):
