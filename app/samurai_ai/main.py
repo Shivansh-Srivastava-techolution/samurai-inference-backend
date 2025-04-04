@@ -2,7 +2,7 @@ import os
 import cv2
 import time
 import torch
-from app.core.Config import SAMURAI_WEIGHT_PATH ,CNN_WEIGHT_PATH, CLASS_MAP
+from app.core.Config import SAMURAI_WEIGHT_PATH ,CNN_WEIGHT_PATH, CLASS_MAP, SAVE_SAM2_VIDEO
 from app.utils.cnn_helper import compute_features
 from app.utils.bbox_helper import find_bbox_in_first_n_frames, bbox_to_xywh
 from app.samurai_ai.samurai_inference import process_video
@@ -16,6 +16,8 @@ class_map = CLASS_MAP
 cnn_model = CNN1DModel(num_features=9, num_classes=len(class_map))
 cnn_model.load_state_dict(torch.load(CNN_WEIGHT_PATH, map_location=device))
 cnn_model.to(device)
+
+os.makedirs("sam2_results", exist_ok=True)
 
 print("CNN Model Loaded:")
 print(cnn_model)
@@ -40,9 +42,8 @@ def inference(video_path):
     # Track bounding boxes across frames
     vidname = os.path.basename(video_path)
     sam_save_path = os.path.join("sam2_results", f"track_{vidname}")
-    os.makedirs("sam2_results", exist_ok=True)
     logic_inference, bbox_sequence = process_video(video_path, samurai_bboxes, model_path=SAMURAI_WEIGHT_PATH, 
-                save_video=True, output_path=sam_save_path)
+                save_video=SAVE_SAM2_VIDEO, output_path=sam_save_path)
     samurai_time_taken = time.perf_counter() - samurai_time_start
     
     cnn_time_start = time.perf_counter()
