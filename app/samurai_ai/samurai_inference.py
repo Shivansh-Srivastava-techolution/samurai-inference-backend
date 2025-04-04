@@ -106,6 +106,7 @@ def process_video(video_path, coords, model_path="sam2/checkpoints/sam2.1_hiera_
             frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
             frame_rate = cap.get(cv2.CAP_PROP_FPS)
             print("SAM2 frame rate: ", frame_rate)
+            print("Frames Processing:", frame_rate//frame_skip)
             cap.release()
         else:
             first_frame = cv2.imread(os.path.join(frames_or_path, sorted(os.listdir(frames_or_path))[0]))
