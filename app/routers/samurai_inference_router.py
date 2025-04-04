@@ -4,6 +4,7 @@ import time
 from fastapi import APIRouter, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
 from app.samurai_ai.main import inference
+from app.core.Config import FRAME_SKIP
 from app.utils.route_helper import save_temp_video, preprocess_saved_video
 
 
@@ -11,7 +12,7 @@ router = APIRouter()
 
 @router.post("/samurai_inference")
 async def process_video(file: UploadFile = File(...)):
-    if not file.filename.endswith((".mp4", ".avi", ".mov")):
+    if not file.filename.endswith((".mp4")):
         raise HTTPException(status_code=400, detail="Unsupported file format")
 
     try:
@@ -20,7 +21,7 @@ async def process_video(file: UploadFile = File(...)):
 
         print("preproxessing started")
         preprocess_time = time.perf_counter()
-        preprocessed_video_path = preprocess_saved_video(video_path, frame_skip=3, resolution_factor=1.0)
+        preprocessed_video_path = preprocess_saved_video(video_path, frame_skip=FRAME_SKIP)
         print("Preprocess time:", time.perf_counter() - preprocess_time)
 
         samurai_time_taken, cnn_time, gdino_time, logic_result, model_result = inference(preprocessed_video_path)
