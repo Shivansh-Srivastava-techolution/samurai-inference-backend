@@ -18,10 +18,7 @@ async def process_video(file: UploadFile = File(...)):
         # Save uploaded video temporarily
         video_path = save_temp_video(file)
 
-        # Run your custom inferences
-        start_time = time.perf_counter()
-        gdino_time, logic_result, model_result = inference(video_path)
-        total_time_diff = time.perf_counter() - start_time
+        samurai_time_taken, cnn_time, gdino_time, logic_result, model_result = inference(video_path)
 
         response = {
             "inference": {
@@ -32,7 +29,8 @@ async def process_video(file: UploadFile = File(...)):
                     "file_size_kb": round(os.path.getsize(video_path) / 1024, 2),
                     "video_id": str(uuid.uuid4()),
                     "gdino_inference_time": gdino_time,
-                    "total_inference_time": total_time_diff
+                    "cnn_inference_time": cnn_time,
+                    "samurai_inference_time": samurai_time_taken
             }
             }
         }

@@ -21,6 +21,7 @@ print("CNN Model Loaded:")
 print(cnn_model)
 print(device)
 print(class_map)
+print()
 
 def inference(video_path):
     cap = cv2.VideoCapture(video_path)
@@ -32,20 +33,21 @@ def inference(video_path):
     bboxes = find_bbox_in_first_n_frames(cap)
     bbox_time_taken = time.perf_counter() - bbox_time_start
     cap.release()
-
+    
+    samurai_time_start = time.perf_counter()
     # Convert bounding boxes to x, y, w, h format
     samurai_bboxes = bbox_to_xywh(bboxes)
-
     # Track bounding boxes across frames
     vidname = os.path.basename(video_path)
     sam_save_path = os.path.join("sam2_results", f"track_{vidname}")
     os.makedirs("sam2_results", exist_ok=True)
     logic_inference, bbox_sequence = process_video(video_path, samurai_bboxes, model_path=SAMURAI_WEIGHT_PATH, 
                 save_video=False, output_path=sam_save_path)
-
+    samurai_time_taken = time.perf_counter() - samurai_time_start
+    
+    cnn_time_start = time.perf_counter()
     # Compute features for model
     features = compute_features(bbox_sequence, frame_width, frame_height)
-
     # Convert to (1, seq_len, 9) for CNN
     input_tensor = torch.tensor(features, dtype=torch.float32).unsqueeze(0).to(device)
 
@@ -55,6 +57,7 @@ def inference(video_path):
         outputs = cnn_model(input_tensor)  # => shape [1, 2]
         predicted_idx = torch.argmax(outputs, dim=1).item()
 
-    model_inference = class_map.get(predicted_idx, "unknown")
+    model_inference = class_map.get(str(predicted_idx), "unknown")
+    cnn_time_taken = time.perf_counter() - cnn_time_start
 
-    return bbox_time_taken, logic_inference, model_inference, 
+    return samurai_time_taken, cnn_time_taken, bbox_time_taken, logic_inference, model_inference, 
