@@ -30,6 +30,6 @@ app.include_router(samurai_inference_router.router)
 if __name__ == "__main__":
     import os
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-    os.system("echo http://$(curl -s ifconfig.me):8000/samurai_inference")
+    os.system("echo http://$(curl -s ifconfig.me):8501/samurai_inference")
+    uvicorn.run(app, host="0.0.0.0", port=8501)
 
