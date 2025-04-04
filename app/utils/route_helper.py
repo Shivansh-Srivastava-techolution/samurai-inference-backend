@@ -35,7 +35,7 @@ def preprocess_saved_video(saved_video_path: str, frame_skip: int = 1, resolutio
     print("Original data:", original_fps, orig_w, orig_h)
 
     # Determine output size
-    out_w, out_h = resolution_factor * orig_w, resolution_factor * orig_h
+    out_w, out_h = int(resolution_factor * orig_w), int(resolution_factor * orig_h)
     print("Preprocessed data:", original_fps, out_w, out_h)
 
     # Output file path
