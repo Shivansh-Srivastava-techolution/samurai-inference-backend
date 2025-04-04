@@ -20,7 +20,7 @@ async def process_video(file: UploadFile = File(...)):
 
         print("preproxessing started")
         preprocess_time = time.perf_counter()
-        preprocessed_video_path = preprocess_saved_video(video_path, frame_skip=2, resolution_factor=0.8)
+        preprocessed_video_path = preprocess_saved_video(video_path, frame_skip=3, resolution_factor=1.0)
         print("Preprocess time:", time.perf_counter() - preprocess_time)
 
         samurai_time_taken, cnn_time, gdino_time, logic_result, model_result = inference(preprocessed_video_path)
