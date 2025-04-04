@@ -1,0 +1,45 @@
+# Python
+*.pyc
+__pycache__/
+*.log
+*.db
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# FastAPI/Uvicorn
+reload.db
+
+# IDEs and Checkpoints
+.vscode/
+.ipynb_checkpoints/
+.DS_Store
+
+# Multimedia and models
+*.mp4
+*.jpg
+*.jpeg
+*.png
+*.pt
+*.pth
+
+# JSON and Notebook
+*.json
+*.ipynb
+
+# PyTest and packaging
+.pytest_cache/
+dist/
+build/
+*.egg-info/
+
+# Misc
+.appmodconfig
+samurai/
+.huggingface/
