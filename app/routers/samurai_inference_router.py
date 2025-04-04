@@ -1,12 +1,15 @@
 import os
 import uuid
-from app.utils.route_helper import save_temp_video
+import time
 from fastapi import APIRouter, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
+from app.samurai_ai.main import inference
+from app.utils.route_helper import save_temp_video
+
 
 router = APIRouter()
 
-@router.post("/samurai-inference")
+@router.post("/samurai_inference")
 async def process_video(file: UploadFile = File(...)):
     if not file.filename.endswith((".mp4", ".avi", ".mov")):
         raise HTTPException(status_code=400, detail="Unsupported file format")
@@ -16,8 +19,9 @@ async def process_video(file: UploadFile = File(...)):
         video_path = save_temp_video(file)
 
         # Run your custom inferences
-        model_result = "grab"
-        logic_result = "invalid"
+        start_time = time.perf_counter()
+        logic_result, model_result = inference(video_path)
+        time_diff = time.perf_counter() - start_time
 
         response = {
             "inference": {
@@ -26,7 +30,8 @@ async def process_video(file: UploadFile = File(...)):
                 "metadata": {
                     "filename": file.filename,
                     "file_size_kb": round(os.path.getsize(video_path) / 1024, 2),
-                    "video_id": str(uuid.uuid4())
+                    "video_id": str(uuid.uuid4()),
+                    "inference_time": time_diff
             }
             }
         }
