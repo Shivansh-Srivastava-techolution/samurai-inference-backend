@@ -43,3 +43,4 @@ build/
 .appmodconfig
 samurai/
 .huggingface/
+sam2_results/

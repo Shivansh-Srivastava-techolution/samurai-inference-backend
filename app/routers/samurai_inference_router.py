@@ -4,7 +4,7 @@ import time
 from fastapi import APIRouter, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
 from app.samurai_ai.main import inference
-from app.utils.route_helper import save_temp_video
+from app.utils.route_helper import save_temp_video, preprocess_saved_video
 
 
 router = APIRouter()
@@ -18,7 +18,12 @@ async def process_video(file: UploadFile = File(...)):
         # Save uploaded video temporarily
         video_path = save_temp_video(file)
 
-        samurai_time_taken, cnn_time, gdino_time, logic_result, model_result = inference(video_path)
+        print("preproxessing started")
+        preprocess_time = time.perf_counter()
+        preprocessed_video_path = preprocess_saved_video(video_path, frame_skip=2, resolution_factor=1)
+        print("Preprocess time:", time.perf_counter() - preprocess_time)
+
+        samurai_time_taken, cnn_time, gdino_time, logic_result, model_result = inference(preprocessed_video_path)
 
         response = {
             "inference": {
@@ -40,5 +45,6 @@ async def process_video(file: UploadFile = File(...)):
         return JSONResponse(content={"error": str(e)}, status_code=500)
     
     finally:
-        if os.path.exists(video_path):
-            os.remove(video_path)
+        # if os.path.exists(video_path):
+        #     os.remove(video_path)
+        pass
