@@ -28,13 +28,15 @@ def preprocess_saved_video(saved_video_path: str, frame_skip: int = 1, resolutio
     cap = cv2.VideoCapture(saved_video_path)
     if not cap.isOpened():
         raise RuntimeError(f"Failed to open video file: {saved_video_path}")
-
+    
     original_fps = cap.get(cv2.CAP_PROP_FPS)
     orig_w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     orig_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    print("Original data:", original_fps, orig_w, orig_h)
 
     # Determine output size
     out_w, out_h = resolution_factor * orig_w, resolution_factor * orig_h
+    print("Preprocessed data:", original_fps, out_w, out_h)
 
     # Output file path
     output_path = saved_video_path.replace(".mp4", "_processed.mp4")
